@@ -64,7 +64,8 @@ class CrowdTangleScraper {
                         await this.#rateLimiter.ready();
 
                         response = await got('https://api.crowdtangle.com/posts/search', {
-                            searchParams: queryArgs
+                            searchParams: queryArgs,
+                            timeout: 5 * 60 * 1000,
                         }).json();
 
                         for (let post of response.result.posts) {
@@ -113,15 +114,5 @@ class CrowdTangleScraper {
 }
 
 module.exports = { CrowdTangleScraper };
-
-async function run() {
-    let credentials = 'XwIl6107eHRdhNurQdHXCoS9O0ndXeVBMwg33Yf9';
-    let cts = new CrowdTangleScraper('d:/temp/crowdtangle', credentials);
-    await cts.search('test2', 'vaccine', '2021-02-27', '2021-02-28', 'da');
-}
-run();
-
-// TODO make CLI and move test code to test.js
-// put in git, without the credentails file
 
 

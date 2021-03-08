@@ -19,6 +19,7 @@ function test() {
         '-t', to,
         '-l', language,
         '-o', platforms,
+        '-c', // generate csv
         '-z' // developer mode, console.log
     ];
 

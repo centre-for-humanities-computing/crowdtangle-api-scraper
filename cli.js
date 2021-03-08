@@ -11,7 +11,8 @@ const optDesc = {
     to: `The date to fetch data to (included) in the format "yyyy-mm-dd". To fetch a single day this should be the same as "from"`,
     language: `The iso language code to search for. Eg. "da"`,
     platforms: `The platforms to search. Default: "facebook". Possible values are [facebook, instagram, reddit] multiple platforms should be separated by comma`,
-    developmentMode: `Should logging data be printed to the stdout`
+    developmentMode: `Should logging data be printed to the stdout`,
+    generateCsv: 'Generate a csv file along with the json file'
 };
 
 async function run() {
@@ -25,6 +26,7 @@ async function run() {
         cli.requiredOption('-t, --to <date>', optDesc.to);
         cli.option('-l, --language <languageCode>', optDesc.language);
         cli.option('-o, --platforms <platforms>', optDesc.platforms);
+        cli.option('-c, --csv', optDesc.generateCsv);
         cli.option('-z, --development-mode', optDesc.developmentMode);
 
         cli.parse(process.argv);
@@ -38,6 +40,7 @@ async function run() {
         let to = options.to;
         let language = options.language;
         let platforms = options.platforms;
+        let generateCsv = options.csv;
         let developmentMode = options.developmentMode;
 
         if (developmentMode) {
@@ -51,7 +54,11 @@ async function run() {
         }
         credentialsStr = credentialsStr.trim();
 
-        let cts = new CrowdTangleScraper(destDir, credentialsStr);
+        let cts = new CrowdTangleScraper(destDir, credentialsStr, (filePath) => {
+            if (generateCsv) {
+
+            }
+        });
         await cts.search(filename, query, from, to, language, platforms);
 
     } catch(e) {

@@ -13,6 +13,7 @@
     "await-lock": "^2.1.0",
     "commander": "^7.1.0",
     "got": "^11.8.2",
+    "lodash": "^4.17.21",
     "luxon": "^1.26.0",
     "sleep-promise": "^9.1.0"
   }

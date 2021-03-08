@@ -1,8 +1,9 @@
 
 const fs = require('fs');
 const path = require('path');
+const _ = require('lodash');
 
-https://github.com/CrowdTangle/API/wiki/Post
+//https://github.com/CrowdTangle/API/wiki/Post
 
 const CSV_MAPPINGS = [
     { path: 'account.name', type: 'string', csvName: 'Group Name' }, // page name?, User Name ?
@@ -24,30 +25,84 @@ const CSV_MAPPINGS = [
     // Many video columns not present
     { path: 'postUrl', type: 'string', csvName: 'URL' },
     { path: 'message', type: 'string', csvName: 'Message' },
-    { path: 'expandedLinks', type: 'string', csvName: 'Link', converter: (links) => links ? links[links.length - 1].original : '' },
     { path: 'caption', type: 'string', csvName: 'Image Text' },
     { path: 'title', type: 'string', csvName: 'Link Text' },
     { path: 'description', type: 'string', csvName: 'Description' },
-    { path: 'score', type: 'number', csvName: 'Overperforming Score' },
-]
+    { path: 'statistics.actual', type: 'number', csvName: 'Total Interactions', converter: (stats) => Object.values(stats).reduce((total, current) => total + current) }, //sum all properties },
+    { path: 'score', type: 'number', csvName: 'Overperforming Score' }
+];
 
-function toCsv(dir) {
-    let jsonFiles = fs.readdirSync(dir).filter((filename) => filename.endsWith('ndjson'));
+// find lib der kan skrive til excel kompatibel output
+// lav så de selv kan lege med, query, from, to dest. lav CLI så de selv kan køre det
 
-    for (let filename of jsonFiles) {
-        let filenamePrefix = path.basename(filename);
-        let filePath = path.join(dir, filename);
-        let content = fs.readFileSync(filePath,'utf8');
-        let json = JSON.parse(content);
-
+function toCsv(filePath) {
+        let filenamePrefix = path.basename(filePath);
+        let dest = path.dirname(filePath);
+        let fileHandle;
+        try {
+            fileHandle = fs.openSync(path.join(dest, `${filenamePrefix}.csv`), 'w');
+            let content = fs.readFileSync(filePath,'utf8'); // if files becomes to big read line by line instead
+            let lines = content.split('\n');
+            fs.writeSync(fileHandle, getCsvHeader() + '\n');
+            for (let line of lines) {
+                if (line.trim().length === 0) {
+                    continue;
+                }
+                let json = JSON.parse(line);
+                let row = getCsvRow(json);
+                fs.writeSync(fileHandle, row + '\n');
+            }
+        } finally {
+            if (fileHandle) {
+                fs.closeSync(fileHandle);
+            }
+        }
 
         /*
         * brug ovenstående til at lave header for filen (hun første linje) of så for hver post udtrække data til csv.
         * Hvis værdien ikke findes (brug _.get()) sættes "", hvis typen er string skal den sættes i "" når den skrive ud
         * hvis værdi findes og har en converter tag værdi som converter returnerer
         * */
-    }
 }
 
-const dir = "";
-toCsv(dir);
+function getCsvRow(json, separator = ';') {
+    let columns = [];
+    for (let colMapping of CSV_MAPPINGS) {
+        let val = _.get(json, colMapping.path);
+        if (val === undefined) {
+            val = "";
+        } else {
+            if (colMapping.converter) {
+                val = colMapping.converter(val);
+            }
+            if (colMapping.type === 'string') {
+                val = escapeCsvStr(val);
+            }
+        }
+        columns.push(val);
+    }
+    return columns.join(separator);
+}
+
+function getCsvHeader(separator = ';') {
+    let columns = [];
+    for (let colMapping of CSV_MAPPINGS) {
+        columns.push(colMapping.csvName);
+    }
+    return columns.join(separator);
+}
+
+function escapeCsvStr(str) {
+    return `"${str.replace(/"/g, '""').replace(/(\r?\n).*/g, ' ')}"`; // make it valid json https://gist.github.com/getify/3667624
+}
+
+/*
+
+* når har lavet løsning, installer det på hendes computer. Hun skal have credentials fil
+*
+
+* */
+
+module.exports = { toCsv };
+
+toCsv('D:/temp/crowdtangle/test_2021-02-01_2021-02-01.ndjson');

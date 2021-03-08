@@ -15,10 +15,12 @@ class CrowdTangleScraper {
     #dest;
     #accessToken;
     #rateLimiter;
+    #afterFileWriteCb;
 
-    constructor(dest, accessToken) {
+    constructor(dest, accessToken, afterFileWriteCb) {
         this.#dest = dest;
         this.#accessToken = accessToken;
+        this.#afterFileWriteCb = afterFileWriteCb;
         this.#rateLimiter = new RateLimiter(10, 1);
     }
 
@@ -45,9 +47,11 @@ class CrowdTangleScraper {
 
                 let pageCount = 0;
                 let response;
+                let filePath;
 
                 try {
-                    fileHandle = fs.openSync(path.join(this.#dest, `${filenamePrefix}_${this._getDateStr(currentFrom)}_${this._getDateStr(currentTo)}.ndjson`), 'w');
+                    filePath = path.join(this.#dest, `${filenamePrefix}_${this._getDateStr(currentFrom)}_${this._getDateStr(currentTo)}.ndjson`);
+                    fileHandle = fs.openSync(filePath, 'w');
                     do {
                         let queryArgs = {
                             token: this.#accessToken,
@@ -81,6 +85,9 @@ class CrowdTangleScraper {
                     if (fileHandle) {
                         fs.closeSync(fileHandle);
                     }
+                }
+                if (this.#afterFileWriteCb) {
+                    this.#afterFileWriteCb(filePath);
                 }
                 currentFrom = this._getNextDayDate(currentFrom);
                 currentTo = this._getNextDayDate(currentTo);

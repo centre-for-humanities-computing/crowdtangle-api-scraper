@@ -33,6 +33,6 @@ $ node cli -h
 
 ### Full Example
 ```
-$ node cli -k "API-KEY" -q "election" -d "/data/4chan-data", -f "2019-01-01" -t "2020-01-01" -l "da" -o "facebook" -c
+$ node cli -k "API-KEY" -q "election" -d "/data/crowdtangle", -f "2019-01-01" -t "2020-01-01" -l "da" -o "facebook" -c
 ```
 

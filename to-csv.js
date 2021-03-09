@@ -32,37 +32,29 @@ const CSV_MAPPINGS = [
     { path: 'score', type: 'number', csvName: 'Overperforming Score' }
 ];
 
-// find lib der kan skrive til excel kompatibel output
-// lav så de selv kan lege med, query, from, to dest. lav CLI så de selv kan køre det
-
 function toCsv(filePath) {
-        let filenamePrefix = path.basename(filePath);
-        let dest = path.dirname(filePath);
-        let fileHandle;
-        try {
-            fileHandle = fs.openSync(path.join(dest, `${filenamePrefix}.csv`), 'w');
-            let content = fs.readFileSync(filePath,'utf8'); // if files becomes to big read line by line instead
-            let lines = content.split('\n');
-            fs.writeSync(fileHandle, getCsvHeader() + '\n');
-            for (let line of lines) {
-                if (line.trim().length === 0) {
-                    continue;
-                }
-                let json = JSON.parse(line);
-                let row = getCsvRow(json);
-                fs.writeSync(fileHandle, row + '\n');
+    let filenamePrefix = path.basename(filePath, '.ndjson');
+    let dest = path.dirname(filePath);
+    let fileHandle;
+    try {
+        fileHandle = fs.openSync(path.join(dest, `${filenamePrefix}.csv`), 'w');
+        let content = fs.readFileSync(filePath,'utf8'); // if files becomes to big read line by line instead
+        let lines = content.split('\n');
+        fs.writeSync(fileHandle, getCsvHeader() + '\n');
+        for (let line of lines) {
+            if (line.trim().length === 0) {
+                continue;
             }
-        } finally {
-            if (fileHandle) {
-                fs.closeSync(fileHandle);
-            }
+            let json = JSON.parse(line);
+            let row = getCsvRow(json);
+            fs.writeSync(fileHandle, row + '\n');
         }
+    } finally {
+        if (fileHandle) {
+            fs.closeSync(fileHandle);
+        }
+    }
 
-        /*
-        * brug ovenstående til at lave header for filen (hun første linje) of så for hver post udtrække data til csv.
-        * Hvis værdien ikke findes (brug _.get()) sættes "", hvis typen er string skal den sættes i "" når den skrive ud
-        * hvis værdi findes og har en converter tag værdi som converter returnerer
-        * */
 }
 
 function getCsvRow(json, separator = ';') {

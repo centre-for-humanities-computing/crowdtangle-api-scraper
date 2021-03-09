@@ -1,6 +1,7 @@
 const cli = require('commander');
 const fs = require('fs');
 const { CrowdTangleScraper } = require('./crowdtangle-scraper');
+const { toCsv } = require('./to-csv');
 
 const optDesc = {
     apiCredentials: `The CrowdTangle API key or a file containing KEY`,
@@ -56,7 +57,7 @@ async function run() {
 
         let cts = new CrowdTangleScraper(destDir, credentialsStr, (filePath) => {
             if (generateCsv) {
-
+                toCsv(filePath);
             }
         });
         await cts.search(filename, query, from, to, language, platforms);

@@ -6,7 +6,7 @@ function test() {
     const dest = 'd:/temp/crowdtangle';
     const from = '2021-02-27';
     const to = '2021-02-28';
-    const filenamePrefix = 'test2';
+    const filenamePrefix = 'test3';
     const language = 'da';
     const platforms = "facebook";
 
@@ -26,7 +26,5 @@ function test() {
     process.argv.push(...args);
 
     const cli = require('./search');
-
-
 }
 test();

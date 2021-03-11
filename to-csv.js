@@ -6,7 +6,8 @@ const _ = require('lodash');
 //https://github.com/CrowdTangle/API/wiki/Post
 
 const CSV_MAPPINGS = [
-    { path: 'account.name', type: 'string', csvName: 'Group Name' }, // page name?, User Name ?
+    { path: 'account.name', type: 'string', csvName: 'Account Name' },
+    { path: 'account.accountType', type: 'string', csvName: 'Account Type' },
 
     { path: 'id', type: 'string', csvName: 'Facebook Id', converter: (id) => id.split('|')[1] },
     { path: 'subscriberCount', type: 'number', csvName: 'Likes at Posting' },
@@ -88,13 +89,4 @@ function escapeCsvStr(str) {
     return `"${str.replace(/"/g, '""').replace(/(\r?\n).*/g, ' ')}"`; // make it valid json https://gist.github.com/getify/3667624
 }
 
-/*
-
-* når har lavet løsning, installer det på hendes computer. Hun skal have credentials fil
-*
-
-* */
-
 module.exports = { toCsv };
-
-toCsv('D:/temp/crowdtangle/test_2021-02-01_2021-02-01.ndjson');

@@ -5,7 +5,8 @@ const { toCsv } = require('./to-csv');
 
 const optDesc = {
     apiCredentials: `The CrowdTangle API key or a file containing KEY`,
-    query: `The term to search for`,
+    query: `The term(s) to search for. Separate terms by comma e.g. "war,peace".`,
+    accounts: 'Account names to search, leave blank to search everything. Account names should be separated by comma e.g. "DonaldTrump,mettefrederiksen.dk".',
     dest: `The directory where the result should be stored`,
     filename: `The name of the result file`,
     from: `The date to fetch data from in the format "yyyy-mm-dd"`,
@@ -21,6 +22,7 @@ async function run() {
     try {
         cli.requiredOption('-k, --api-credentials <apiCredentials>', optDesc.apiCredentials);
         cli.requiredOption('-q, --query <query>', optDesc.query);
+        cli.option('-a, --accounts <names>', optDesc.accounts);
         cli.requiredOption('-d, --destination <directory>', optDesc.destination);
         cli.option('-p, --filename-prefix <string>', optDesc.filename, 'posts');
         cli.requiredOption('-f, --from <date>', optDesc.from);
@@ -35,6 +37,7 @@ async function run() {
 
         let credentialsStr = options.apiCredentials;
         let query = options.query;
+        let accounts = options.accounts;
         let destDir = options.destination;
         let filename = options.filenamePrefix;
         let from = options.from;
@@ -60,7 +63,7 @@ async function run() {
                 toCsv(filePath);
             }
         });
-        await cts.search(filename, query, from, to, language, platforms);
+        await cts.search(filename, query, accounts, from, to, language, platforms);
 
     } catch(e) {
         console.error(e);

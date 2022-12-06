@@ -2,17 +2,19 @@
 
 function test() {
     const credentials = require('./credentials').token;
-    const query = 'vaccine';
-    const dest = 'd:/temp/crowdtangle';
-    const from = '2021-02-27';
-    const to = '2021-02-28';
+    const query = 'is,and,or'; //split terms by comma e.g.: man,woman,child (OR search)
+    const accounts = ''; // a comma separated list s of accounts to search e.g. DonaldTrump,mettefrederiksen.dk
+    const dest = 'd:/temp/crowdtangle2';
+    const from = '2020-02-27';
+    const to = '2022-02-28';
     const filenamePrefix = 'test4';
-    const language = 'da';
+    const language = ''; // e.g. "da" or "en"
     const platforms = "facebook";
 
     let args = [
         '-k', credentials,
         '-q', query,
+        '-a', accounts,
         '-d', dest,
         '-p', filenamePrefix,
         '-f', from,

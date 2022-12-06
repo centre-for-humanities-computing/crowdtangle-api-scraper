@@ -28,12 +28,13 @@ class CrowdTangleScraper {
     /**
      * @param filenamePrefix
      * @param query
+     * @param accounts
      * @param {string} from a date in the format "yyyy-mm-dd"
      * @param {string} to a date in the format "yyyy-mm-dd"
      * @param {string} language the language iso code
      * @param {string} [platforms=facebook] the platform(s) to search. Can be one or more of "facebook", "instagram", "reddit". Combine multiple my comma
      */
-    async search(filenamePrefix, query, from, to, language, platforms = "facebook") {
+    async search(filenamePrefix, query, accounts, from, to, language, platforms = "facebook") {
 
         let endDate = this._parseDate(to);
         let fileHandle;
@@ -55,6 +56,7 @@ class CrowdTangleScraper {
                     let queryArgs = {
                         token: this.#accessToken,
                         searchTerm: query,
+                        accounts: accounts,
                         sortBy: 'date',
                         startDate: this._getCrowdTangleDateStr(currentFrom),
                         endDate: this._getCrowdTangleDateStr(this._getEndOfDate(currentTo)),
@@ -70,6 +72,8 @@ class CrowdTangleScraper {
                         searchParams: queryArgs,
                         timeout: 5 * 60 * 1000,
                     }).json();
+
+                    console.log(response)
 
                     for (let post of response.result.posts) {
                         fs.writeSync(fileHandle, JSON.stringify(post) + '\n');
